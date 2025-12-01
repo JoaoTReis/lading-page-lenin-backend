@@ -1,15 +1,20 @@
-# Imagem base do Java
-FROM eclipse-temurin:21-jdk
-
-# Define o diretório de trabalho
+# Etapa 1: Build da aplicação
+FROM maven:3.9.0-eclipse-temurin-17 AS builder
 WORKDIR /app
 
-# Copia o jar gerado
-COPY target/*.jar app.jar
+COPY pom.xml .
+COPY src ./src
 
-# Expõe a porta do Spring Boot
+RUN mvn -B -DskipTests clean package
+
+# Etapa 2: Runtime (imagem final mais leve)
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+
+COPY --from=builder /app/target/*.jar app.jar
+
+ENV PORT=8080
+
 EXPOSE 8080
 
-# Comando para rodar o jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
+CMD ["sh", "-c", "java -jar app.jar --server.port=${PORT}"]
