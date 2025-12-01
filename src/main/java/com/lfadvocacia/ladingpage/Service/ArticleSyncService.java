@@ -34,14 +34,6 @@ public class ArticleSyncService {
             a.setLink(dto.getLink());
             a.setThumbnail(dto.getThumbnailURL()); // <-- CORRIGIDO
 
-            // tratar datas vindo da planilha (ex: "2025-11-24")
-            if (dto.getData() != null && !dto.getData().isBlank()) {
-                LocalDate d = LocalDate.parse(dto.getData());
-                a.setData(d);
-            } else {
-                a.setData(null);
-            }
-
             artigos.add(a);
         }
 

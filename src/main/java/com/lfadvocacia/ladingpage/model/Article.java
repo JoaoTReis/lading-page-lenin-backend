@@ -8,6 +8,5 @@ public class Article {
 
     private String titulo;
     private String link;
-    private LocalDate data;
     private String thumbnail;  // corresponde a ThumbnailURL
 }
