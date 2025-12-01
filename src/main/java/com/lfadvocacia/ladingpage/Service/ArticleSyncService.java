@@ -9,13 +9,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class ArticleSyncService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ArticleSyncService.class);
 
     @Value("${google.sheets.url}")
     private String sheetUrl;
@@ -23,30 +18,23 @@ public class ArticleSyncService {
     private final RestTemplate rest = new RestTemplate();
 
     public List<Article> sync() {
-        try {
-            ResponseEntity<ArticleDTO[]> response =
-                    rest.getForEntity(sheetUrl, ArticleDTO[].class);
 
-            ArticleDTO[] artigosSheets = response.getBody();
-            if (artigosSheets == null) {
-                logger.error("A resposta do Google Sheets retornou null");
-                return List.of();
-            }
+        // Chama a URL do Apps Script e recebe um array de DTOs
+        ResponseEntity<ArticleDTO[]> response = rest.getForEntity(sheetUrl, ArticleDTO[].class);
 
-            List<Article> artigos = new ArrayList<>();
+        ArticleDTO[] artigosSheets = response.getBody();
 
-            for (ArticleDTO dto : artigosSheets) {
-                Article a = new Article();
-                a.setTitulo(dto.getTitulo());
-                a.setLink(dto.getLink());
-                a.setThumbnail(dto.getThumbnailURL());
-                artigos.add(a);
-            }
+        List<Article> artigos = new ArrayList<>();
 
-            return artigos;
-        } catch (Exception e) {
-            logger.error("Erro ao sincronizar artigos: ", e);
-            throw e; // relança para que o Spring registre o 500
+        for (ArticleDTO dto : artigosSheets) {
+            Article a = new Article();
+            a.setTitulo(dto.getTitulo());
+            a.setLink(dto.getLink());
+            a.setThumbnail(dto.getThumbnailURL()); // pega diretamente do JSON
+
+            artigos.add(a);
         }
+
+        return artigos;
     }
 }
