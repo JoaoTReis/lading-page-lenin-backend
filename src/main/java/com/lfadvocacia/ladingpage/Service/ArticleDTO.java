@@ -6,10 +6,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ArticleDTO {
-    private int id;
+
     private String titulo;
     private String link;
-    private String data;
-    private String tag;
+    private String data;        // formato vindo da planilha: "2025-11-24"
+    private String thumbnailURL;
 }
-
